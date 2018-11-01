@@ -32,21 +32,21 @@ Systemiphus leverages Terraform's excellent infrastructure as code capabilities 
 
 #### Installation of Stack
 1) Install Terraform - https://www.terraform.io/
-* Get the binary here: https://www.terraform.io/downloads.html
-* Put the terraform binary on the PATH
-    * `$ cp $terraform_binary /usr/local/bin`
-* Verify the install
+    * Get the binary here: https://www.terraform.io/downloads.html
+    * Put the terraform binary on the PATH
+        * `$ cp $terraform_binary /usr/local/bin`
+    * Verify the install
     * `$ terraform`
 2) Run Terraform
-* Initialise terraform if not already initialised
+    * Initialise terraform if not already initialised
     `$ terraform init`
-* Unencrypt the tfstate file with git-crypt
+    * Unencrypt the tfstate file with git-crypt
     `$ git-crypt unlock`
-* Apply the new config
+    * Apply the new config
     `$ terraform apply -var-file="secrets.tfvars"`
-* Check the applied config
+    * Check the applied config
     `$ terraform show -var-file="secrets.tfvars"`
-* TAKE CARE - Remove all infrastructure if required
+    * TAKE CARE - Remove all infrastructure if required
     `$ terraform destroy -var-file="secrets.tfvars"`
 
 ### Storing Secrets
