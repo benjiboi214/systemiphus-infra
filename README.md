@@ -39,15 +39,15 @@ Systemiphus leverages Terraform's excellent infrastructure as code capabilities 
         * `$ terraform`
 2) Run Terraform
     * Initialise terraform if not already initialised
-    `$ terraform init`
+        * `$ terraform init`
     * Unencrypt the tfstate file with git-crypt
-    `$ git-crypt unlock`
+        * `$ git-crypt unlock`
     * Apply the new config
-    `$ terraform apply -var-file="secrets.tfvars"`
+        * `$ terraform apply -var-file="secrets.tfvars"`
     * Check the applied config
-    `$ terraform show -var-file="secrets.tfvars"`
+        * `$ terraform show -var-file="secrets.tfvars"`
     * TAKE CARE - Remove all infrastructure if required
-    `$ terraform destroy -var-file="secrets.tfvars"`
+        * `$ terraform destroy -var-file="secrets.tfvars"
 
 ### Storing Secrets
 We will be storing terraform state (very sensitive!) in the git repo, this certain files and directories need to be encrypted.
