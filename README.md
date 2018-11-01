@@ -36,7 +36,7 @@ Systemiphus leverages Terraform's excellent infrastructure as code capabilities 
     * Put the terraform binary on the PATH
         * `$ cp $terraform_binary /usr/local/bin`
     * Verify the install
-    * `$ terraform`
+        * `$ terraform`
 2) Run Terraform
     * Initialise terraform if not already initialised
     `$ terraform init`
