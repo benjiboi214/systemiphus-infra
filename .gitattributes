@@ -1,2 +1,1 @@
-terraform.tfstate filter=git-crypt diff=git-crypt
 terraform_secrets.tfvars filter=git-crypt diff=git-crypt
