@@ -2,6 +2,14 @@
 
 variable "aws_access_key" {}
 variable "aws_secret_key" {}
-variable "systemiphus_aws_region" {
-  default = "ap-southeast-2"
+variable "systemiphus_aws_region" {}
+variable "systemiphus_aws_az" {}
+variable "systemiphus_base_cidr_block" {}
+variable "systemiphus_region_map" {
+    # Used for offseting the CIDR function based on the region for VPC and Subnet config
+    type = "map"
+}
+
+data "aws_availability_zone" "systemiphus_primary" {
+  name = "${var.systemiphus_aws_az}"
 }
