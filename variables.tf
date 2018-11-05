@@ -9,7 +9,3 @@ variable "systemiphus_region_map" {
     # Used for offseting the CIDR function based on the region for VPC and Subnet config
     type = "map"
 }
-
-data "aws_availability_zone" "systemiphus_primary" {
-  name = "${var.systemiphus_aws_az}"
-}
