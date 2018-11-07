@@ -9,3 +9,7 @@ resource "aws_vpc" "systemiphus" {
     Name = "systemiphus"
   }
 }
+
+resource "aws_internet_gateway" "systemiphus_igw" {
+  vpc_id = "${aws_vpc.systemiphus.id}"
+}
