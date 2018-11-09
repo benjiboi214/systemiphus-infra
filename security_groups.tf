@@ -1,8 +1,24 @@
 // Define the security groups and access levels for everything here.
-resource "aws_security_group" "systemiphus_public" {
+resource "aws_security_group" "systemiphus_public_sg" {
     name = "systemiphus_public_routes"
     description = "The SG for inbound and outbound rules to the public subnet"
     vpc_id = "${aws_vpc.systemiphus.id}"
+
+    ingress {
+        from_port = 0
+        to_port = 0
+        protocol = -1
+        security_groups = ["${aws_security_group.systemiphus_private_sg.id}"]
+        description = "Allow ingress from the private sec group to the public subnet."
+    }
+
+    egress {
+        from_port = 0
+        to_port = 0
+        protocol = -1
+        cidr_blocks = ["0.0.0.0/0"]
+        description = "Allow access to anywhere from the public subnet"
+    }
 
     # # From private subnet to NAT gateway 80 & 443
     # ingress {
@@ -36,10 +52,88 @@ resource "aws_security_group" "systemiphus_public" {
 
 }
 
-resource "aws_security_group" "systemiphus_private" {
+resource "aws_security_group" "systemiphus_private_sg" {
     name = "systemiphus_private_routes"
     description = "The SG for inbound and outbound rules to the private subnet"
     vpc_id = "${aws_vpc.systemiphus.id}"
+
+    ingress {
+        from_port = 0
+        to_port = 0
+        protocol = -1
+        self = true
+        description = "Allow ingress inside the private security group"
+    }
+
+    egress {
+        from_port = 0
+        to_port = 0
+        protocol = -1
+        self = true
+        description = "Allow egress inside the private security group"
+    }
+
+    ingress {
+        from_port = 22
+        to_port = 22
+        protocol = 6
+        cidr_blocks = ["${null_resource.systemiphus_nat_instance.triggers.private_ip}/32"]
+        description = "Allow SSH access from the NAT instance IP."
+    }
+
+    # ingress {
+    #     from_port = 22
+    #     to_port = 22
+    #     protocol = 6
+    #     security_groups = ["${aws_security_group.systemiphus_nat_sg.id}"]
+    #     description = "Allow SSH ingress from nat sec group"
+    # }
+
+    # egress {
+    #     from_port = 0
+    #     to_port = 0
+    #     protocol = -1
+    #     security_groups = ["${aws_security_group.systemiphus_nat_sg.id}"]
+    # }
+}
+
+resource "aws_security_group" "systemiphus_nat_sg" {
+    name = "systemiphus_nat_routes"
+    description = "The SG for inbound and outbound rules to the NAT instance"
+    vpc_id = "${aws_vpc.systemiphus.id}"
+    depends_on = ["aws_security_group.systemiphus_private_sg"]
+
+    ingress {
+        from_port = 22
+        to_port = 22
+        protocol = 6
+        cidr_blocks = ["1.136.107.75/32"]
+        description = "Allow SSH from my public IP"
+    }
+
+    ingress {
+        from_port = -1
+        to_port = -1
+        protocol = "icmp"
+        cidr_blocks = ["1.136.107.75/32"]
+        description = "Allow icmp to public security group from my public IP"
+    }
+
+    ingress {
+        from_port = 0
+        to_port = 0
+        protocol = -1
+        security_groups = ["${aws_security_group.systemiphus_private_sg.id}"]
+        description = "Allow the private security group to access the NAT instance"
+    }
+
+    egress {
+        from_port = 0
+        to_port = 0
+        protocol = -1
+        cidr_blocks = ["0.0.0.0/0"]
+        description = "Allow access to anywhere from the nat subnet"
+    }
 }
 ### Public
 ## Inbound
