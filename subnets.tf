@@ -18,11 +18,3 @@ resource "aws_subnet" "systemiphus_private_subnet" {
     cidr_block = "${null_resource.systemiphus_subnet.triggers.private_cidr}"
     availability_zone = "${var.systemiphus_aws_az}"
 }
-
-output "systemiphus_public_subnet" {
-    value = "${aws_subnet.systemiphus_public_subnet.cidr_block}"
-}
-
-output "systemiphus_private_subnet" {
-    value = "${aws_subnet.systemiphus_private_subnet.cidr_block}"
-}
