@@ -2,7 +2,9 @@
 
 variable "aws_access_key" {}
 variable "aws_secret_key" {}
+variable "systemiphus_ssh_keyname" {}
 variable "systemiphus_aws_region" {}
+variable "systemiphus_bastion_host_size" {}
 variable "systemiphus_aws_az" {}
 variable "systemiphus_base_cidr_block" {}
 variable "systemiphus_region_map" {
@@ -10,6 +12,6 @@ variable "systemiphus_region_map" {
     type = "map"
 }
 
-data "aws_availability_zone" "systemiphus_primary" {
-  name = "${var.systemiphus_aws_az}"
+variable "systemiphus_nat_instance_host_number" {
+    default = 10
 }

@@ -1,14 +1,25 @@
-resource "aws_instance" "test_public" {
-    ami = "ami-8a3f9ae8"
-    instance_type = "t2.micro"
-    key_name = "systemiphus_ultimate_access"
-    vpc_security_group_ids = ["${aws_security_group.systemiphus_public.id}"]
-    subnet_id = "${aws_subnet.systemiphus_public_subnet.id}"
+resource "null_resource" "systemiphus_nat_instance" {
+    triggers = {
+        private_ip = "${cidrhost(null_resource.systemiphus_subnet.triggers.public_cidr, var.systemiphus_nat_instance_host_number)}"
+    }
 }
+
+resource "aws_instance" "bastion_host" {
+    ami = "${data.aws_ami.systemiphus_nat_ami.image_id}"
+    instance_type = "${var.systemiphus_bastion_host_size}"
+    key_name = "${var.systemiphus_ssh_keyname}"
+    vpc_security_group_ids = ["${aws_security_group.systemiphus_nat_sg.id}"]
+    subnet_id = "${aws_subnet.systemiphus_public_subnet.id}"
+    private_ip = "${null_resource.systemiphus_nat_instance.triggers.private_ip}"
+    source_dest_check = false
+}
+
+# get rid of private instance for now
 resource "aws_instance" "test_private" {
     ami = "ami-8a3f9ae8"
     instance_type = "t2.micro"
     key_name = "systemiphus_ultimate_access"
-    vpc_security_group_ids = ["${aws_security_group.systemiphus_private.id}"]
+    vpc_security_group_ids = ["${aws_security_group.systemiphus_private_sg.id}"]
     subnet_id = "${aws_subnet.systemiphus_private_subnet.id}"
 }
+
