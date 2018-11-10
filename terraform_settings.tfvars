@@ -18,3 +18,9 @@ systemiphus_bastion_host_size = "t2.micro"
 systemiphus_region_map = {
     ap-southeast-2 = 0 # Sydney
 }
+
+# NAT Instance AMI name
+systemiphus_nat_ami_name = "amzn-ami-vpc-nat*"
+
+# Product code for CentOS
+systemiphus_centos_product_code = "aw0evgkw8e5c1q413zgy5pjce"

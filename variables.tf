@@ -15,3 +15,5 @@ variable "systemiphus_region_map" {
 variable "systemiphus_nat_instance_host_number" {
     default = 10
 }
+variable "systemiphus_nat_ami_name" {}
+variable "systemiphus_centos_product_code" {}

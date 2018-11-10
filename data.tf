@@ -9,6 +9,19 @@ data "aws_ami" "systemiphus_nat_ami" {
   }
    filter {
     name   = "name"
-    values = ["amzn-ami-vpc-nat*"]
+    values = ["${var.systemiphus_nat_ami_name}"]
+  }
+}
+
+data "aws_ami" "systemiphus_centos_ami" {
+  most_recent = true
+  
+  filter {
+    name = "owner-alias"
+    values = ["aws-marketplace"]
+  }
+  filter {
+    name = "product-code"
+    values = ["${var.systemiphus_centos_product_code}"]
   }
 }
