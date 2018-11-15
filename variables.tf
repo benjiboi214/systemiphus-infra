@@ -17,3 +17,15 @@ variable "systemiphus_nat_instance_host_number" {
 }
 variable "systemiphus_nat_ami_name" {}
 variable "systemiphus_centos_product_code" {}
+variable "protonmail_mx_records" {
+    type = "list"
+}
+variable "protonmail_txt_records" {
+    type = "list"
+}
+variable "protonmail_dmarc_txt_records" {
+    type = "list"
+}
+variable "protonmail_dkim_txt_records" {
+    type = "list"
+}
