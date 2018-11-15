@@ -1,5 +1,5 @@
 resource "aws_route53_zone" "systemiphus_private_dns" {
-  name = "systemiphus.com"
+  name = "internal-systemiphus.com"
 
   vpc {
     vpc_id = "${aws_vpc.systemiphus.id}"
