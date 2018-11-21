@@ -29,3 +29,6 @@ variable "protonmail_dmarc_txt_records" {
 variable "protonmail_dkim_txt_records" {
     type = "list"
 }
+variable "belliot_current_public_ip" {
+    type="list"
+}

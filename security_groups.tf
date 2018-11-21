@@ -107,7 +107,7 @@ resource "aws_security_group" "systemiphus_nat_sg" {
         from_port = 22
         to_port = 22
         protocol = 6
-        cidr_blocks = ["185.161.201.16/32"]
+        cidr_blocks = "${var.belliot_current_public_ip}"
         description = "Allow SSH from my public IP"
     }
 
@@ -115,7 +115,7 @@ resource "aws_security_group" "systemiphus_nat_sg" {
         from_port = -1
         to_port = -1
         protocol = "icmp"
-        cidr_blocks = ["185.161.201.16/32"]
+        cidr_blocks = "${var.belliot_current_public_ip}"
         description = "Allow icmp to public security group from my public IP"
     }
 
@@ -141,12 +141,12 @@ resource "aws_security_group" "systemiphus_nat_sg" {
         cidr_blocks = ["0.0.0.0/0"]
     }
 
-    # ingress {
-    #     from_port = 4300
-    #     to_port = 4300
-    #     protocol = 6
-    #     cidr_blocks = ["0.0.0.0/0"]
-    # }
+    ingress {
+        from_port = 4300
+        to_port = 4300
+        protocol = 6
+        cidr_blocks = ["0.0.0.0/0"]
+    }
 
     # ingress {
     #     from_port = 943
