@@ -2,3 +2,5 @@
 terraform.tfstate
 terraform.tfstate.backup
 systemiphus_ultimate_access.pem
+.DS_Store
+*.ovpn
