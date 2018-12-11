@@ -12,6 +12,28 @@ resource "aws_security_group" "systemiphus_public_sg" {
         description = "Allow ingress from the private sec group to the public subnet."
     }
 
+    ingress {
+        from_port = 80
+        to_port = 80
+        protocol = 6
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    ingress {
+        from_port = 443
+        to_port = 443
+        protocol = 6
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    ingress {
+        from_port = 22
+        to_port = 22
+        protocol = 6
+        cidr_blocks = "${var.belliot_current_public_ip}"
+        description = "Allow SSH from my public IP"
+    }
+
     egress {
         from_port = 0
         to_port = 0
@@ -19,36 +41,6 @@ resource "aws_security_group" "systemiphus_public_sg" {
         cidr_blocks = ["0.0.0.0/0"]
         description = "Allow access to anywhere from the public subnet"
     }
-
-    # # From private subnet to NAT gateway 80 & 443
-    # ingress {
-    #     from_port = 80
-    #     to_port = 80
-    #     protocol = 6
-    #     cidr_blocks = "${aws_subnet.systemiphus_private_subnet.cidr_blocks}"
-    # }
-    # ingress {
-    #     from_port = 443
-    #     to_port = 443
-    #     protocol = 6
-    #     cidr_blocks = "${aws_subnet.systemiphus_private_subnet.cidr_blocks}"
-    # }
-
-    # # From internet to webservers
-    # ingress {
-    #     from_port = 80
-    #     to_port = 80
-    #     protocol = 6
-    #     cidr_blocks = "0.0.0.0/0"
-    # }
-    # ingress {
-    #     from_port = 443
-    #     to_port = 443
-    #     protocol = 6
-    #     cidr_blocks = "0.0.0.0/0"
-    # }
-
-    # To anywhere, any protocol, any port
 
 }
 
@@ -77,24 +69,18 @@ resource "aws_security_group" "systemiphus_private_sg" {
         from_port = 22
         to_port = 22
         protocol = 6
-        cidr_blocks = ["${null_resource.systemiphus_nat_instance.triggers.private_ip}/32"]
+        cidr_blocks = ["${null_resource.systemiphus_nat_instance_public.triggers.private_ip}/32"]
         description = "Allow SSH access from the NAT instance IP."
     }
 
-    # ingress {
-    #     from_port = 22
-    #     to_port = 22
-    #     protocol = 6
-    #     security_groups = ["${aws_security_group.systemiphus_nat_sg.id}"]
-    #     description = "Allow SSH ingress from nat sec group"
-    # }
+    ingress {
+        from_port = -1
+        to_port = -1
+        protocol = "icmp"
+        cidr_blocks = ["${null_resource.systemiphus_nat_instance_public.triggers.private_ip}/32"]
+        description = "Allow icmp to public security group from my public IP"
+    }
 
-    # egress {
-    #     from_port = 0
-    #     to_port = 0
-    #     protocol = -1
-    #     security_groups = ["${aws_security_group.systemiphus_nat_sg.id}"]
-    # }
 }
 
 resource "aws_security_group" "systemiphus_nat_sg" {
@@ -109,14 +95,6 @@ resource "aws_security_group" "systemiphus_nat_sg" {
         protocol = 6
         cidr_blocks = "${var.belliot_current_public_ip}"
         description = "Allow SSH from my public IP"
-    }
-
-    ingress {
-        from_port = -1
-        to_port = -1
-        protocol = "icmp"
-        cidr_blocks = "${var.belliot_current_public_ip}"
-        description = "Allow icmp to public security group from my public IP"
     }
 
     ingress {
@@ -141,26 +119,13 @@ resource "aws_security_group" "systemiphus_nat_sg" {
         cidr_blocks = ["0.0.0.0/0"]
     }
 
+    
     ingress {
-        from_port = 4300
-        to_port = 4300
+        from_port = 943
+        to_port = 943
         protocol = 6
         cidr_blocks = ["0.0.0.0/0"]
     }
-
-    # ingress {
-    #     from_port = 943
-    #     to_port = 943
-    #     protocol = 6
-    #     cidr_blocks = ["0.0.0.0/0"]
-    # }
-
-    # ingress {
-    #     from_port = 1194
-    #     to_port = 1194
-    #     protocol = 6
-    #     cidr_blocks = ["0.0.0.0/0"]
-    # }
 
     egress {
         from_port = 0

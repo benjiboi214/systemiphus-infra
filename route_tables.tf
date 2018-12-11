@@ -17,7 +17,8 @@ resource "aws_route_table" "systemiphus_private" {
 
     route {
         cidr_block = "0.0.0.0/0"
-        instance_id = "${aws_instance.bastion_host.id}"
+        # instance_id = "${aws_instance.bastion_host.id}"
+        network_interface_id = "${aws_network_interface.nat_public_interface.id}"
     }
 }
 

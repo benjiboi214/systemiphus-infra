@@ -38,18 +38,18 @@ resource "aws_route53_record" "systemiphus_dkim_txt_records" {
   records = "${var.protonmail_dkim_txt_records}"
 }
 
-resource "aws_route53_record" "jenkins" {
-  zone_id = "${aws_route53_zone.systemiphus_private_dns.zone_id}"
-  name    = "jenkins"
-  type    = "A"
-  ttl     = "300"
-  records = ["${aws_instance.jenkins_host.private_ip}"]
-}
+# resource "aws_route53_record" "jenkins" {
+#   zone_id = "${aws_route53_zone.systemiphus_private_dns.zone_id}"
+#   name    = "jenkins"
+#   type    = "A"
+#   ttl     = "300"
+#   records = ["${aws_instance.jenkins_host.private_ip}"]
+# }
 
-resource "aws_route53_record" "ansible_awx" {
-  zone_id = "${aws_route53_zone.systemiphus_private_dns.zone_id}"
-  name    = "awx"
-  type    = "A"
-  ttl     = "300"
-  records = ["${aws_instance.tower_host.private_ip}"]
-}
+# resource "aws_route53_record" "ansible_awx" {
+#   zone_id = "${aws_route53_zone.systemiphus_private_dns.zone_id}"
+#   name    = "awx"
+#   type    = "A"
+#   ttl     = "300"
+#   records = ["${aws_instance.tower_host.private_ip}"]
+# }
