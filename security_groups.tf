@@ -1,55 +1,25 @@
-// Define the security groups and access levels for everything here.
 resource "aws_security_group" "systemiphus_public_sg" {
     name = "systemiphus_public_routes"
     description = "The SG for inbound and outbound rules to the public subnet"
     vpc_id = "${aws_vpc.systemiphus.id}"
 
     ingress {
-        from_port = 0
-        to_port = 0
-        protocol = -1
-        security_groups = ["${aws_security_group.systemiphus_private_sg.id}"]
-        description = "Allow ingress from the private sec group to the public subnet."
+        # Ingress from My IP over SSH to Public SG
+        from_port = 22
+        to_port = 22
+        protocol = 6
+        cidr_blocks = "${var.belliot_current_public_ip}"
+        description = "Ingress from My IP over SSH to Public SG"
     }
 
     egress {
+        # Egress to Anywhere over Any Protocol from Public SG
         from_port = 0
         to_port = 0
         protocol = -1
         cidr_blocks = ["0.0.0.0/0"]
-        description = "Allow access to anywhere from the public subnet"
+        description = "Egress to Anywhere over Any Protocol from Public SG"
     }
-
-    # # From private subnet to NAT gateway 80 & 443
-    # ingress {
-    #     from_port = 80
-    #     to_port = 80
-    #     protocol = 6
-    #     cidr_blocks = "${aws_subnet.systemiphus_private_subnet.cidr_blocks}"
-    # }
-    # ingress {
-    #     from_port = 443
-    #     to_port = 443
-    #     protocol = 6
-    #     cidr_blocks = "${aws_subnet.systemiphus_private_subnet.cidr_blocks}"
-    # }
-
-    # # From internet to webservers
-    # ingress {
-    #     from_port = 80
-    #     to_port = 80
-    #     protocol = 6
-    #     cidr_blocks = "0.0.0.0/0"
-    # }
-    # ingress {
-    #     from_port = 443
-    #     to_port = 443
-    #     protocol = 6
-    #     cidr_blocks = "0.0.0.0/0"
-    # }
-
-    # To anywhere, any protocol, any port
-
 }
 
 resource "aws_security_group" "systemiphus_private_sg" {
@@ -58,143 +28,116 @@ resource "aws_security_group" "systemiphus_private_sg" {
     vpc_id = "${aws_vpc.systemiphus.id}"
 
     ingress {
-        from_port = 0
-        to_port = 0
-        protocol = -1
-        self = true
-        description = "Allow ingress inside the private security group"
-    }
-
-    egress {
-        from_port = 0
-        to_port = 0
-        protocol = -1
-        self = true
-        description = "Allow egress inside the private security group"
-    }
-
-    ingress {
+        # Ingress from Bastion IP over SSH to Private SG
         from_port = 22
         to_port = 22
         protocol = 6
-        cidr_blocks = ["${null_resource.systemiphus_nat_instance.triggers.private_ip}/32"]
-        description = "Allow SSH access from the NAT instance IP."
+        cidr_blocks = ["${null_resource.bastion_public.triggers.private_ip}/32"]
+        description = "Ingress from Bastion IP over SSH to Private SG"
     }
 
-    # ingress {
-    #     from_port = 22
-    #     to_port = 22
-    #     protocol = 6
-    #     security_groups = ["${aws_security_group.systemiphus_nat_sg.id}"]
-    #     description = "Allow SSH ingress from nat sec group"
-    # }
+    ingress {
+        # Ingress from NAT IP over Any Protocol to Private SG
+        from_port = 0
+        to_port = 0
+        protocol = -1
+        cidr_blocks = ["${null_resource.nat_public.triggers.private_ip}/32"]
+        description = "Ingress from NAT IP over Any Protocol to Private SG"
+    }
 
-    # egress {
-    #     from_port = 0
-    #     to_port = 0
-    #     protocol = -1
-    #     security_groups = ["${aws_security_group.systemiphus_nat_sg.id}"]
-    # }
+    egress {
+        # Egress to Anywhere over Any Protocol from Private SG
+        from_port = 0
+        to_port = 0
+        protocol = -1
+        cidr_blocks = ["0.0.0.0/0"]
+        description = "Allows egress to the nat security group for NATing"
+    }
 }
 
 resource "aws_security_group" "systemiphus_nat_sg" {
     name = "systemiphus_nat_routes"
     description = "The SG for inbound and outbound rules to the NAT instance"
     vpc_id = "${aws_vpc.systemiphus.id}"
-    depends_on = ["aws_security_group.systemiphus_private_sg"]
 
     ingress {
+        # Ingress from My IP over SSH to NAT SG
         from_port = 22
         to_port = 22
         protocol = 6
         cidr_blocks = "${var.belliot_current_public_ip}"
-        description = "Allow SSH from my public IP"
+        description = "Ingress from My IP over SSH to NAT SG"
     }
 
     ingress {
-        from_port = -1
-        to_port = -1
-        protocol = "icmp"
-        cidr_blocks = "${var.belliot_current_public_ip}"
-        description = "Allow icmp to public security group from my public IP"
-    }
-
-    ingress {
-        from_port = 0
-        to_port = 0
-        protocol = -1
-        security_groups = ["${aws_security_group.systemiphus_private_sg.id}"]
-        description = "Allow the private security group to access the NAT instance"
-    }
-
-    ingress {
+        # Ingress from Private CIDR over 80 to NAT SG
         from_port = 80
         to_port = 80
         protocol = 6
-        cidr_blocks = ["0.0.0.0/0"]
+        cidr_blocks = ["${null_resource.systemiphus_subnet.triggers.private_cidr}"]
+        description = "Ingress from Private CIDR over 80 to NAT SG"
     }
 
     ingress {
+        # Ingress from Private CIDR over 443 to NAT SG
         from_port = 443
         to_port = 443
         protocol = 6
-        cidr_blocks = ["0.0.0.0/0"]
+        cidr_blocks = ["${null_resource.systemiphus_subnet.triggers.private_cidr}"]
+        description = "Ingress from Private CIDR over 443 to NAT SG"
     }
-
-    ingress {
-        from_port = 4300
-        to_port = 4300
-        protocol = 6
-        cidr_blocks = ["0.0.0.0/0"]
-    }
-
-    # ingress {
-    #     from_port = 943
-    #     to_port = 943
-    #     protocol = 6
-    #     cidr_blocks = ["0.0.0.0/0"]
-    # }
-
-    # ingress {
-    #     from_port = 1194
-    #     to_port = 1194
-    #     protocol = 6
-    #     cidr_blocks = ["0.0.0.0/0"]
-    # }
 
     egress {
+        # Egress to anywhere from NAT SG on any port
         from_port = 0
         to_port = 0
         protocol = -1
         cidr_blocks = ["0.0.0.0/0"]
-        description = "Allow access to anywhere from the nat subnet"
+        description = "Egress to anywhere from NAT SG on any port"
+    }
+
+}
+
+resource "aws_security_group" "systemiphus_bastion_sg" {
+    name = "systemiphus_bastion_security"
+    vpc_id = "${aws_vpc.systemiphus.id}"
+    description = "The SG for inbound and outbound rules to the NAT instance"
+    depends_on = ["aws_security_group.systemiphus_nat_sg"]
+
+    ingress {
+        # Ingress from My IP over SSH to Bastion SG
+        from_port = 22
+        to_port = 22
+        protocol = 6
+        cidr_blocks = "${var.belliot_current_public_ip}"
+        description = "Ingress from My IP over SSH to Bastion SG"
+    }
+
+    ingress {
+        # Ingress from My IP over 443 to Bastion SG
+        from_port = 443
+        to_port = 443
+        protocol = 6
+        cidr_blocks = "${var.belliot_current_public_ip}"
+        description = "Ingress from My IP over 443 to Bastion SG"
+    }
+
+    ingress {
+        # Ingress from My IP over 943 to Bastion SG
+        from_port = 943
+        to_port = 943
+        protocol = 6
+        cidr_blocks = "${var.belliot_current_public_ip}"
+        description = "Ingress from My IP over 943 to Bastion SG"
+    }
+
+    egress {
+        # Egress to Private SG over SSH from Bastion SG
+        from_port = 22
+        to_port = 22
+        protocol = 6
+        security_groups = ["${aws_security_group.systemiphus_private_sg.id}"]
+        description = "Allows egress to the private SG for VPN connections."
     }
 }
-### Public
-## Inbound
-# from current SG, All protocols, all ports
-# NAT Settings
-# from private subnet, TCP 80
-# from private subnet, TCP 443
-# webserver settings
-# from anywhere TCP 80
-# from anywhere TCP 443
-
-## Outbound
-# Basic Settings
-# to anywhere, all prots, all ports
-# Forwards SSH internally to private subnet (Optionals)
-# to private subnet, TCP 22
-# LATER: Provide access to DB Server in prtivate subnet
-
-
-## Private
-# Inbound
-# from current SG, all prot, all port
-# from public subnet, all prot, all port
-
-# Outbound
-# to the current SG, all prot, all port
-# to NAT instance, TCP 80
-# to NAT instance, TCP 443
 

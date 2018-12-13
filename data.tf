@@ -12,7 +12,6 @@ data "aws_ami" "systemiphus_nat_ami" {
     values = ["${var.systemiphus_nat_ami_name}"]
   }
 }
-
 data "aws_ami" "systemiphus_centos_ami" {
   most_recent = true
   
