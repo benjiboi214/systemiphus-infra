@@ -12,6 +12,9 @@ systemiphus_ssh_keyname = "systemiphus_ultimate_access"
 
 # Bastion/NAT host tier size
 systemiphus_bastion_host_size = "t2.micro"
+systemiphus_nat_host_size = "t2.micro"
+systemiphus_jenkins_host_size = "t2.micro"
+
 
 # For now, only the 0 map (Sydney) is in use.
 # In future we should be able to deploy cross region resources using this to expand the cidr block
@@ -21,6 +24,8 @@ systemiphus_region_map = {
 
 # NAT Instance AMI name
 systemiphus_openvpn_ami = "ami-7777b515"
+systemiphus_nat_ami = "ami-062c04ec46aecd204"
+systemiphus_nat_ami_name = "amzn-ami-vpc-nat*"
 
 # Product code for CentOS
 systemiphus_centos_product_code = "aw0evgkw8e5c1q413zgy5pjce"
