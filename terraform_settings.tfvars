@@ -11,10 +11,10 @@ systemiphus_aws_az = "ap-southeast-2b"
 systemiphus_ssh_keyname = "systemiphus_ultimate_access"
 
 # Bastion/NAT host tier size
-systemiphus_bastion_host_size = "t2.micro"
-systemiphus_nat_host_size = "t2.micro"
-systemiphus_jenkins_host_size = "t2.micro"
-
+systemiphus_bastion_host_size = "t2.nano"
+systemiphus_nat_host_size = "t2.nano"
+systemiphus_jenkins_host_size = "t2.nano"
+systemiphus_awx_host_size = "t2.nano"
 
 # For now, only the 0 map (Sydney) is in use.
 # In future we should be able to deploy cross region resources using this to expand the cidr block

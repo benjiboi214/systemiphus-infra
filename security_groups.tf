@@ -139,5 +139,14 @@ resource "aws_security_group" "systemiphus_bastion_sg" {
         security_groups = ["${aws_security_group.systemiphus_private_sg.id}"]
         description = "Allows egress to the private SG for VPN connections."
     }
+
+    egress {
+        # Egress to Anywhere over Any Protocol from Bastion SG
+        from_port = 0
+        to_port = 0
+        protocol = -1
+        cidr_blocks = ["0.0.0.0/0"]
+        description = "Egress to Anywhere over Any Protocol from Bastion SG"
+    }
 }
 
