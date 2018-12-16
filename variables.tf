@@ -8,6 +8,8 @@ variable "systemiphus_bastion_host_size" {}
 variable "systemiphus_nat_host_size" {}
 
 variable "systemiphus_jenkins_host_size" {}
+
+variable "systemiphus_awx_host_size" {}
 variable "systemiphus_aws_az" {}
 variable "systemiphus_base_cidr_block" {}
 variable "systemiphus_region_map" {

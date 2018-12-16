@@ -43,7 +43,6 @@ resource "aws_instance" "nat_host" {
     }
 }
 
-# get rid of private instance for now
 resource "aws_instance" "jenkins_host" {
     ami = "${var.systemiphus_ubuntu_ami}"
     instance_type = "${var.systemiphus_jenkins_host_size}"
@@ -59,17 +58,17 @@ resource "aws_instance" "jenkins_host" {
     }
 }
 
-# resource "aws_instance" "tower_host" {
-#     ami = "${data.aws_ami.systemiphus_centos_ami.image_id}"
-#     instance_type = "t2.micro"
-#     key_name = "systemiphus_ultimate_access"
-#     vpc_security_group_ids = ["${aws_security_group.systemiphus_private_sg.id}"]
-#     subnet_id = "${aws_subnet.systemiphus_private.id}"
+resource "aws_instance" "awx_host" {
+    ami = "${var.systemiphus_ubuntu_ami}"
+    instance_type = "${var.systemiphus_awx_host_size}"
+    key_name = "systemiphus_ultimate_access"
+    vpc_security_group_ids = ["${aws_security_group.systemiphus_private_sg.id}"]
+    subnet_id = "${aws_subnet.systemiphus_private.id}"
     
-#     tags {
-#         role = "config"
-#         name = "ansible_awx"
-#         subnet = "private"
-#         tier = "management"
-#     }
-# }
+    tags {
+        role = "config"
+        name = "ansible_awx"
+        subnet = "private"
+        tier = "management"
+    }
+}
