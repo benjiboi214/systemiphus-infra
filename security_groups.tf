@@ -37,12 +37,39 @@ resource "aws_security_group" "systemiphus_private_sg" {
     }
 
     ingress {
+        # Ingress from Bastion IP over HTTP to Private SG
+        from_port = 80
+        to_port = 80
+        protocol = 6
+        cidr_blocks = ["${null_resource.bastion_public.triggers.private_ip}/32"]
+        description = "Ingress from Bastion IP over HTTP to Private SG"
+    }
+
+    ingress {
+        # Ingress from Bastion IP over HTTPS to Private SG
+        from_port = 443
+        to_port = 443
+        protocol = 6
+        cidr_blocks = ["${null_resource.bastion_public.triggers.private_ip}/32"]
+        description = "Ingress from Bastion IP over HTTPS to Private SG"
+    }
+
+    ingress {
         # Ingress from NAT IP over Any Protocol to Private SG
         from_port = 0
         to_port = 0
         protocol = -1
         cidr_blocks = ["${null_resource.nat_public.triggers.private_ip}/32"]
         description = "Ingress from NAT IP over Any Protocol to Private SG"
+    }
+
+    ingress {
+        # Allows ingress to self from self
+        from_port = 0
+        to_port = 0
+        protocol = -1
+        self = true
+        description = "Allows ingress to self from self"
     }
 
     egress {
