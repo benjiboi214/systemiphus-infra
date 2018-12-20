@@ -10,7 +10,8 @@ variable "systemiphus_nat_host_size" {}
 variable "systemiphus_jenkins_host_size" {}
 
 variable "systemiphus_awx_host_size" {}
-variable "systemiphus_aws_az" {}
+variable "systemiphus_primary_aws_az" {}
+variable "systemiphus_secondary_aws_az" {}
 variable "systemiphus_base_cidr_block" {}
 variable "systemiphus_region_map" {
     # Used for offseting the CIDR function based on the region for VPC and Subnet config
@@ -43,3 +44,6 @@ variable "protonmail_dkim_txt_records" {
 variable "belliot_current_public_ip" {
     type="list"
 }
+variable "db_master_user" {}
+variable "db_master_password" {}
+
