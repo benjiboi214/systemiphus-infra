@@ -69,3 +69,19 @@ resource "aws_route53_record" "ansible_awx" {
   ttl     = "300"
   records = ["${aws_instance.awx_host.private_ip}"]
 }
+
+resource "aws_route53_record" "bastion_int" {
+  zone_id = "${aws_route53_zone.systemiphus_private_dns.zone_id}"
+  name    = "bastion"
+  type    = "A"
+  ttl     = "300"
+  records = ["${aws_instance.bastion_host.private_ip}"]
+}
+
+resource "aws_route53_record" "nat_int" {
+  zone_id = "${aws_route53_zone.systemiphus_private_dns.zone_id}"
+  name    = "nat"
+  type    = "A"
+  ttl     = "300"
+  records = ["${aws_instance.nat_host.private_ip}"]
+}
