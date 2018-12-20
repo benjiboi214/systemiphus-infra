@@ -20,7 +20,7 @@ resource "aws_instance" "bastion_host" {
 
     tags {
         role = "openvpn"
-        name = "bastion"
+        Name = "bastion"
         subnet = "private"
         tier = "management"
     }
@@ -37,7 +37,7 @@ resource "aws_instance" "nat_host" {
 
     tags {
         role = "nat"
-        name = "nat"
+        Name = "nat"
         subnet = "public"
         tier = "management"
     }
@@ -52,14 +52,14 @@ resource "aws_instance" "jenkins_host" {
 
     tags {
         role = "cicd"
-        name = "jenkins"
+        Name = "jenkins"
         subnet = "private"
         tier = "management"
     }
 }
 
 resource "aws_instance" "awx_host" {
-    ami = "${var.systemiphus_ubuntu_ami}"
+    ami = "${data.aws_ami.systemiphus_centos_ami.image_id}"
     instance_type = "${var.systemiphus_awx_host_size}"
     key_name = "systemiphus_ultimate_access"
     vpc_security_group_ids = ["${aws_security_group.systemiphus_private_sg.id}"]
@@ -67,8 +67,34 @@ resource "aws_instance" "awx_host" {
     
     tags {
         role = "config"
-        name = "ansible_awx"
+        Name = "awx"
         subnet = "private"
         tier = "management"
     }
+}
+
+resource "aws_db_subnet_group" "systemiphus_db_subnet_group" {
+  name       = "systemiphus_db_subnet_group"
+  subnet_ids = ["${aws_subnet.systemiphus_private.id}", "${aws_subnet.systemiphus_public.id}"]
+
+  tags = {
+    Name = "Systemiphus DB subnet group"
+  }
+}
+
+resource "aws_db_instance" "systemiphus_postgres" {
+    allocated_storage = 20
+    storage_type = "gp2"
+    engine = "postgres"
+    engine_version = "10.4"
+    instance_class = "db.t2.micro"
+    name = "systemiphus_db"
+    username = "${var.db_master_user}"
+    password = "${var.db_master_password}"
+    db_subnet_group_name = "${aws_db_subnet_group.systemiphus_db_subnet_group.name}"
+    vpc_security_group_ids = ["${aws_security_group.systemiphus_private_sg.id}"]
+}
+
+output "The PG Internal Address" {
+    value = "${aws_db_instance.systemiphus_postgres.endpoint}"
 }
