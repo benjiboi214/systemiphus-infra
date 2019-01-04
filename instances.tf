@@ -18,6 +18,12 @@ resource "aws_instance" "bastion_host" {
     subnet_id = "${aws_subnet.systemiphus_public.id}"
     private_ip = "${null_resource.bastion_public.triggers.private_ip}"
 
+    root_block_device {
+        volume_type = "standard"
+        volume_size = 8
+        delete_on_termination = "true"
+    }
+
     tags {
         role = "openvpn"
         Name = "bastion"
@@ -35,6 +41,12 @@ resource "aws_instance" "nat_host" {
     private_ip = "${null_resource.nat_public.triggers.private_ip}"
     source_dest_check = false
 
+    root_block_device {
+        volume_type = "standard"
+        volume_size = 8
+        delete_on_termination = "true"
+    }
+
     tags {
         role = "nat"
         Name = "nat"
@@ -43,20 +55,26 @@ resource "aws_instance" "nat_host" {
     }
 }
 
-resource "aws_instance" "jenkins_host" {
-    ami = "${var.systemiphus_ubuntu_ami}"
-    instance_type = "${var.systemiphus_jenkins_host_size}"
-    key_name = "${var.systemiphus_ssh_keyname}"
-    vpc_security_group_ids = ["${aws_security_group.systemiphus_private_sg.id}"]
-    subnet_id = "${aws_subnet.systemiphus_private.id}"
+# resource "aws_instance" "jenkins_host" {
+#     ami = "${var.systemiphus_ubuntu_ami}"
+#     instance_type = "${var.systemiphus_jenkins_host_size}"
+#     key_name = "${var.systemiphus_ssh_keyname}"
+#     vpc_security_group_ids = ["${aws_security_group.systemiphus_private_sg.id}"]
+#     subnet_id = "${aws_subnet.systemiphus_private.id}"
 
-    tags {
-        role = "cicd"
-        Name = "jenkins"
-        subnet = "private"
-        tier = "management"
-    }
-}
+#     root_block_device {
+#         volume_type = "gp2"
+#         volume_size = 8
+#         delete_on_termination = "true"
+#     }
+
+#     tags {
+#         role = "cicd"
+#         Name = "jenkins"
+#         subnet = "private"
+#         tier = "management"
+#     }
+# }
 
 resource "aws_instance" "awx_host" {
     ami = "${data.aws_ami.systemiphus_centos_ami.image_id}"
@@ -70,6 +88,12 @@ resource "aws_instance" "awx_host" {
         Name = "awx"
         subnet = "private"
         tier = "management"
+    }
+
+    root_block_device {
+        volume_type = "gp2"
+        volume_size = 30
+        delete_on_termination = "true"
     }
 }
 
