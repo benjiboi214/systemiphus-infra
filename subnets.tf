@@ -10,11 +10,11 @@ resource "null_resource" "systemiphus_subnet" {
 resource "aws_subnet" "systemiphus_public" {
     vpc_id = "${aws_vpc.systemiphus.id}"
     cidr_block = "${null_resource.systemiphus_subnet.triggers.public_cidr}"
-    availability_zone = "${var.systemiphus_aws_az}"
+    availability_zone = "${var.systemiphus_secondary_aws_az}"
 }
 
 resource "aws_subnet" "systemiphus_private" {
     vpc_id = "${aws_vpc.systemiphus.id}"
     cidr_block = "${null_resource.systemiphus_subnet.triggers.private_cidr}"
-    availability_zone = "${var.systemiphus_aws_az}"
+    availability_zone = "${var.systemiphus_primary_aws_az}"
 }
