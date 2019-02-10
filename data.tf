@@ -1,5 +1,5 @@
 data "aws_availability_zone" "systemiphus_primary" {
-  name = "${var.systemiphus_aws_az}"
+  name = "${var.systemiphus_primary_aws_az}"
 }
 data "aws_ami" "systemiphus_nat_ami" {
   most_recent      = true

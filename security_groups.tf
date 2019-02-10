@@ -20,6 +20,15 @@ resource "aws_security_group" "systemiphus_public_sg" {
         cidr_blocks = ["0.0.0.0/0"]
         description = "Egress to Anywhere over Any Protocol from Public SG"
     }
+
+    ingress {
+        # Ingress from Private SG over SSH to Public SG
+        from_port = 22
+        to_port = 22
+        protocol = 6
+        cidr_blocks = ["${aws_instance.awx_host.private_ip}/32"]
+        description = "Ingress from Private SG over SSH to Public SG"
+    }
 }
 
 resource "aws_security_group" "systemiphus_private_sg" {
@@ -37,12 +46,39 @@ resource "aws_security_group" "systemiphus_private_sg" {
     }
 
     ingress {
+        # Ingress from Bastion IP over HTTP to Private SG
+        from_port = 80
+        to_port = 80
+        protocol = 6
+        cidr_blocks = ["${null_resource.bastion_public.triggers.private_ip}/32"]
+        description = "Ingress from Bastion IP over HTTP to Private SG"
+    }
+
+    ingress {
+        # Ingress from Bastion IP over HTTPS to Private SG
+        from_port = 443
+        to_port = 443
+        protocol = 6
+        cidr_blocks = ["${null_resource.bastion_public.triggers.private_ip}/32"]
+        description = "Ingress from Bastion IP over HTTPS to Private SG"
+    }
+
+    ingress {
         # Ingress from NAT IP over Any Protocol to Private SG
         from_port = 0
         to_port = 0
         protocol = -1
         cidr_blocks = ["${null_resource.nat_public.triggers.private_ip}/32"]
         description = "Ingress from NAT IP over Any Protocol to Private SG"
+    }
+
+    ingress {
+        # Allows ingress to self from self
+        from_port = 0
+        to_port = 0
+        protocol = -1
+        self = true
+        description = "Allows ingress to self from self"
     }
 
     egress {
@@ -67,6 +103,15 @@ resource "aws_security_group" "systemiphus_nat_sg" {
         protocol = 6
         cidr_blocks = "${var.belliot_current_public_ip}"
         description = "Ingress from My IP over SSH to NAT SG"
+    }
+
+    ingress {
+        # Ingress from Private SG over SSH to NAT SG
+        from_port = 22
+        to_port = 22
+        protocol = 6
+        cidr_blocks = ["${aws_instance.awx_host.private_ip}/32"]
+        description = "Ingress from Private SG over SSH to NAT SG"
     }
 
     ingress {
@@ -112,6 +157,15 @@ resource "aws_security_group" "systemiphus_bastion_sg" {
         cidr_blocks = "${var.belliot_current_public_ip}"
         description = "Ingress from My IP over SSH to Bastion SG"
     }
+
+    ingress {
+        # Ingress from Private SG over SSH to Bastion SG
+        from_port = 22
+        to_port = 22
+        protocol = 6
+        cidr_blocks = ["${aws_instance.awx_host.private_ip}/32"]
+        description = "Ingress from Private SG over SSH to Bastion SG"
+    }    
 
     ingress {
         # Ingress from My IP over 443 to Bastion SG
