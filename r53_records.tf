@@ -62,14 +62,6 @@ resource "aws_route53_record" "jenkins" {
   records = ["${aws_instance.jenkins_host.private_ip}"]
 }
 
-# resource "aws_route53_record" "ansible_awx" {
-#   zone_id = "${aws_route53_zone.systemiphus_private_dns.zone_id}"
-#   name    = "awx"
-#   type    = "A"
-#   ttl     = "300"
-#   records = ["${aws_instance.awx_host.private_ip}"]
-# }
-
 resource "aws_route53_record" "bastion_int" {
   zone_id = "${aws_route53_zone.systemiphus_private_dns.zone_id}"
   name    = "bastion"

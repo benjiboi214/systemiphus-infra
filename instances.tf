@@ -76,27 +76,6 @@ resource "aws_instance" "jenkins_host" {
     }
 }
 
-# resource "aws_instance" "awx_host" {
-#     ami = "${data.aws_ami.systemiphus_centos_ami.image_id}"
-#     instance_type = "${var.systemiphus_awx_host_size}"
-#     key_name = "${var.systemiphus_ssh_keyname}"
-#     vpc_security_group_ids = ["${aws_security_group.systemiphus_private_sg.id}"]
-#     subnet_id = "${aws_subnet.systemiphus_private.id}"
-    
-#     tags {
-#         role = "config"
-#         Name = "awx"
-#         subnet = "private"
-#         tier = "management"
-#     }
-
-#     root_block_device {
-#         volume_type = "gp2"
-#         volume_size = 30
-#         delete_on_termination = "true"
-#     }
-# }
-
 resource "aws_db_subnet_group" "systemiphus_db_subnet_group" {
   name       = "systemiphus_db_subnet_group"
   subnet_ids = ["${aws_subnet.systemiphus_private.id}", "${aws_subnet.systemiphus_public.id}"]
