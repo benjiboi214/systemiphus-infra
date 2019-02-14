@@ -14,7 +14,7 @@ systemiphus_ssh_keyname = "systemiphus_ultimate_access"
 # Bastion/NAT host tier size
 systemiphus_bastion_host_size = "t2.nano"
 systemiphus_nat_host_size = "t2.nano"
-systemiphus_jenkins_host_size = "t2.nano"
+systemiphus_jenkins_host_size = "t2.small"
 systemiphus_awx_host_size = "t2.small"
 
 # For now, only the 0 map (Sydney) is in use.
@@ -38,4 +38,4 @@ protonmail_txt_records = ["protonmail-verification=3f1b177096a522e847f39de1be485
 protonmail_dmarc_txt_records = ["v=DMARC1; p=none; rua=mailto:ben.elliot@systemiphus.com"]
 protonmail_dkim_txt_records = ["v=DKIM1; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCX/Es3jq2pV5BYQsoNErzwwI+m8yq58t4I0iuuddu57rvHEcp2RORgxXFOTCH8G32J7AAPAjs8BAkTNuBbmdUudKJiQkrIr5gbvQ3NrsIDd/jNGRcR14G94TJgrgae+WN4O9lBYEohBTK6iPfm9zipQ4bpnA5My+8UFAcuRQZ8pwIDAQAB"]
 
-belliot_current_public_ip = ["45.248.76.134/32", "121.208.45.46/32"]
+belliot_current_public_ip = ["45.248.76.134/32", "121.208.45.46/32", "59.100.195.66/32", "185.161.201.14/32"]
