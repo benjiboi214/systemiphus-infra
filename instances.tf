@@ -84,20 +84,3 @@ resource "aws_db_subnet_group" "systemiphus_db_subnet_group" {
     Name = "Systemiphus DB subnet group"
   }
 }
-
-resource "aws_db_instance" "systemiphus_postgres" {
-    allocated_storage = 20
-    storage_type = "gp2"
-    engine = "postgres"
-    engine_version = "10.4"
-    instance_class = "db.t2.micro"
-    name = "systemiphus_db"
-    username = "${var.db_master_user}"
-    password = "${var.db_master_password}"
-    db_subnet_group_name = "${aws_db_subnet_group.systemiphus_db_subnet_group.name}"
-    vpc_security_group_ids = ["${aws_security_group.systemiphus_private_sg.id}"]
-}
-
-output "The PG Internal Address" {
-    value = "${aws_db_instance.systemiphus_postgres.endpoint}"
-}
