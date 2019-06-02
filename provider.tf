@@ -2,16 +2,47 @@
 provider "aws" {
   access_key = "${var.aws_access_key}"
   secret_key = "${var.aws_secret_key}"
-  region     = "${var.systemiphus_aws_region}"
+  region     = "${var.aws_region}"
 }
 
-# Used for managing the remote state backend. See personal notes for details
 terraform {
     backend "s3" {
-        bucket = "systemiphus-bucket"
-        key = "terraform/prod/state"
+        bucket = "p-systemiphus-terraform-remote-state-storage-s3"
+        key = "terraform/shared-infrastructure/state"
         region = "ap-southeast-2"
         dynamodb_table = "systemiphus-state-lock"
         encrypt = true
     }
+}
+
+resource "aws_s3_bucket" "terraform-state-storage-s3" {
+    bucket = "p-systemiphus-terraform-remote-state-storage-s3"
+ 
+    versioning {
+      enabled = true
+    }
+ 
+    lifecycle {
+      prevent_destroy = true
+    }
+ 
+    tags = {
+      Name = "S3 Remote Terraform State Store"
+    }      
+}
+
+resource "aws_dynamodb_table" "dynamodb-terraform-state-lock" {
+  name           = "systemiphus-state-lock"
+  hash_key       = "LockID"
+  read_capacity  = 20
+  write_capacity = 20
+
+  attribute {
+    name = "LockID"
+    type = "S"
+  }
+
+  tags = {
+    Name = "Systemiphus Terraform State Lock Table"
+  }
 }
