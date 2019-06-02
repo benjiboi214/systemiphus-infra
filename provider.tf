@@ -7,7 +7,7 @@ provider "aws" {
 
 terraform {
     backend "s3" {
-        bucket = "systemiphus-terraform-remote-state-storage-s3"
+        bucket = "p-systemiphus-terraform-remote-state-storage-s3"
         key = "terraform/shared-infrastructure/state"
         region = "ap-southeast-2"
         dynamodb_table = "systemiphus-state-lock"
@@ -16,7 +16,7 @@ terraform {
 }
 
 resource "aws_s3_bucket" "terraform-state-storage-s3" {
-    bucket = "systemiphus-terraform-remote-state-storage-s3"
+    bucket = "p-systemiphus-terraform-remote-state-storage-s3"
  
     versioning {
       enabled = true

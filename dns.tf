@@ -31,6 +31,10 @@ resource "aws_route53_record" "vpn" {
   records = ["${aws_eip.vpn.public_ip}"]
 }
 
+output "vpn_instance_public_dns" {
+  value = "${aws_route53_record.vpn.name}"
+}
+
 resource "aws_route53_record" "mx_records" {
   zone_id = "${aws_route53_zone.public_dns.zone_id}"
   name    = ""
@@ -68,13 +72,13 @@ resource "aws_route53_record" "int" {
   name    = "int"
   type    = "NS"
   ttl     = "300"
-  records = ["${aws_route53_zone.internal_dns.name_servers}"]
+  records = "${aws_route53_zone.internal_dns.name_servers}"
 }
 
 resource "aws_route53_record" "mmpl" {
-  zone_id = "${aws_route53_zone.mmpl_dns.zone_id}"
-  name    = "int"
+  zone_id = "${aws_route53_zone.public_dns.zone_id}"
+  name    = "mmpl"
   type    = "NS"
   ttl     = "300"
-  records = ["${aws_route53_zone.mmpl_dns.name_servers}"]
+  records = "${aws_route53_zone.mmpl_dns.name_servers}"
 }
