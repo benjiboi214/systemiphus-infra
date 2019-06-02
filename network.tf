@@ -73,7 +73,7 @@ resource "aws_route_table" "private" {
 
     route {
         cidr_block = "0.0.0.0/0"
-        instance_id = "${aws_instance.nat.id}"
+        instance_id = "${aws_instance.vpn.id}"
         # gateway_id = "${aws_internet_gateway.primary.id}"
     }
     
@@ -84,19 +84,19 @@ resource "aws_route_table_association" "private" {
     subnet_id = "${aws_subnet.primary_private.id}"
 }
 
-# NAT Instance
-resource "null_resource" "nat" {
+# VPN/NAT Instance
+resource "null_resource" "vpn" {
     triggers = {
         private_ip = "${cidrhost(null_resource.subnet_ranges.triggers.public_cidr, 10)}"
     }
 }
 
-resource "aws_instance" "nat" {
+resource "aws_instance" "vpn" {
     ami = "${var.ubuntu_1604_ami}"
-    instance_type = "${var.nat_instance_size}"
+    instance_type = "${var.vpn_instance_size}"
     key_name = "${var.key_name}"
     subnet_id = "${aws_subnet.primary_public.id}"
-    private_ip = "${null_resource.nat.triggers.private_ip}"
+    private_ip = "${null_resource.vpn.triggers.private_ip}"
     source_dest_check = false
     vpc_security_group_ids = ["${aws_security_group.public.id}"]
 
@@ -107,15 +107,15 @@ resource "aws_instance" "nat" {
     }
 
     tags = {
-        Name = "inst-sys-nat"
+        Name = "inst-sys-vpn"
     }
 }
 
-resource "aws_eip" "nat" {
+resource "aws_eip" "vpn" {
     vpc = true
-    instance = "${aws_instance.nat.id}"
+    instance = "${aws_instance.vpn.id}"
 }
 
-output "nat_instance_public_ip" {
-    value = "${aws_eip.nat.public_ip}"
+output "vpn_instance_public_ip" {
+    value = "${aws_eip.vpn.public_ip}"
 }

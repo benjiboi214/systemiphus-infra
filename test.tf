@@ -1,6 +1,6 @@
 resource "aws_instance" "testing" {
     ami = "${var.ubuntu_1604_ami}"
-    instance_type = "${var.nat_instance_size}"
+    instance_type = "${var.vpn_instance_size}"
     key_name = "${var.key_name}"
     subnet_id = "${aws_subnet.primary_private.id}"
     private_ip = "10.1.1.10"

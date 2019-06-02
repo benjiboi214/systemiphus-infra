@@ -8,8 +8,8 @@ variable "primary_cidr" {}
 variable "az_1" {}
 variable "az_2" {}
 
-# NAT Instance
-variable "nat_instance_size" {}
+# VPN/NAT Instance
+variable "vpn_instance_size" {}
 
 # Instances
 variable "ubuntu_1604_ami" {}
