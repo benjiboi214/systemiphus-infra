@@ -75,6 +75,18 @@ resource "aws_route53_record" "int" {
   records = "${aws_route53_zone.internal_dns.name_servers}"
 }
 
+resource "aws_route53_record" "jenkins" {
+  zone_id = "${aws_route53_zone.internal_dns.zone_id}"
+  name    = "jenkins.int.systemiphus.com"
+  type    = "A"
+  ttl     = "300"
+  records = ["${aws_instance.jenkins.private_ip}"]
+}
+
+output "jenkins_instance_public_dns" {
+  value = "${aws_route53_record.jenkins.name}"
+}
+
 resource "aws_route53_record" "mmpl" {
   zone_id = "${aws_route53_zone.public_dns.zone_id}"
   name    = "mmpl"
