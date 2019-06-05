@@ -1,2 +1,2 @@
-terraform_secrets.tfvars filter=git-crypt diff=git-crypt
-systemiphus_ultimate_access.pem filter=git-crypt diff=git-crypt
+secrets.tfvars filter=git-crypt diff=git-crypt
+terraform-provisioner.pem filter=git-crypt diff=git-crypt
