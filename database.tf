@@ -15,7 +15,7 @@ resource "aws_db_instance" "postgres" {
     engine_version = "10.4"
     instance_class = "db.t2.micro"
     name = "systemiphus_db"
-    username = "${var.db_master_user}"
+    username = "${var.db_master_username}"
     password = "${var.db_master_password}"
     db_subnet_group_name = "${aws_db_subnet_group.primary.name}"
     vpc_security_group_ids = ["${aws_security_group.private.id}"]
