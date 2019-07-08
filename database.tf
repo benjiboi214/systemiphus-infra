@@ -12,7 +12,7 @@ resource "aws_db_instance" "postgres" {
     allocated_storage = 20
     storage_type = "gp2"
     engine = "postgres"
-    engine_version = "10.4"
+    engine_version = "10.6"
     instance_class = "db.t2.micro"
     name = "systemiphus_db"
     username = "${var.db_master_username}"
