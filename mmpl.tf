@@ -22,7 +22,7 @@ resource "aws_instance" "mmpl" {
     }
 
     tags = {
-        Name = "inst-sys-mmpl"
+        Name = "inst-sys-mmpl-staging"
     }
 }
 
