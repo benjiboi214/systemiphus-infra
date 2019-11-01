@@ -40,11 +40,23 @@ resource "aws_route53_record" "mmpl_staging" {
   name    = "staging.mmpl.systemiphus.com"
   type    = "A"
   ttl     = "300"
-  records = ["${aws_eip.mmpl.public_ip}"]
+  records = ["${aws_eip.mmpl_staging.public_ip}"]
 }
 
-output "mmpl_instance_public_dns" {
+output "mmpl_staging_instance_public_dns" {
   value = "${aws_route53_record.mmpl_staging.name}"
+}
+
+resource "aws_route53_record" "mmpl_production" {
+  zone_id = "${aws_route53_zone.mmpl_dns.zone_id}"
+  name    = "mmpl.systemiphus.com"
+  type    = "A"
+  ttl     = "300"
+  records = ["${aws_eip.mmpl_production.public_ip}"]
+}
+
+output "mmpl_production_instance_public_dns" {
+  value = "${aws_route53_record.mmpl_production.name}"
 }
 
 resource "aws_route53_record" "mx_records" {

@@ -17,7 +17,7 @@ resource "aws_instance" "jenkins" {
 
     root_block_device {
         volume_type = "standard"
-        volume_size = 8
+        volume_size = 40
         delete_on_termination = "true"
     }
 
