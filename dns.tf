@@ -35,6 +35,18 @@ output "vpn_instance_public_dns" {
   value = "${aws_route53_record.vpn.name}"
 }
 
+resource "aws_route53_record" "mmpl_staging" {
+  zone_id = "${aws_route53_zone.mmpl_dns.zone_id}"
+  name    = "staging.mmpl.systemiphus.com"
+  type    = "A"
+  ttl     = "300"
+  records = ["${aws_eip.mmpl.public_ip}"]
+}
+
+output "mmpl_instance_public_dns" {
+  value = "${aws_route53_record.mmpl_staging.name}"
+}
+
 resource "aws_route53_record" "mx_records" {
   zone_id = "${aws_route53_zone.public_dns.zone_id}"
   name    = ""
