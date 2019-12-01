@@ -2,7 +2,7 @@
 aws_region = "ap-southeast-2"
 
 # Network Settings
-primary_cidr = "10.1.0.0/16"
+primary_cidr = "10.10.0.0/16"
 az_1 = "ap-southeast-2b"
 az_2 = "ap-southeast-2c"
 

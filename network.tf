@@ -19,10 +19,15 @@ resource "aws_internet_gateway" "primary" {
 }
 
 ## Subnets
-resource "null_resource" "subnet_ranges" {
+resource "null_resource" "public_subnet_ranges" {
     triggers = {
         public_a_cidr = "${cidrsubnet(aws_vpc.primary.cidr_block, 8, 0)}"
         public_b_cidr = "${cidrsubnet(aws_vpc.primary.cidr_block, 8, 1)}"
+    }
+}
+
+resource "null_resource" "private_subnet_ranges" {
+    triggers = {
         private_a_cidr = "${cidrsubnet(aws_vpc.primary.cidr_block, 8, 2)}"
         private_b_cidr = "${cidrsubnet(aws_vpc.primary.cidr_block, 8, 3)}"
     }
@@ -31,7 +36,7 @@ resource "null_resource" "subnet_ranges" {
 # Public Subnets
 resource "aws_subnet" "primary_public_a" {
     vpc_id = "${aws_vpc.primary.id}"
-    cidr_block = "${null_resource.subnet_ranges.triggers.public_a_cidr}"
+    cidr_block = "${null_resource.public_subnet_ranges.triggers.public_a_cidr}"
     availability_zone = "${var.az_1}"
 
     tags = {
@@ -41,7 +46,7 @@ resource "aws_subnet" "primary_public_a" {
 
 resource "aws_subnet" "primary_public_b" {
     vpc_id = "${aws_vpc.primary.id}"
-    cidr_block = "${null_resource.subnet_ranges.triggers.public_b_cidr}"
+    cidr_block = "${null_resource.public_subnet_ranges.triggers.public_b_cidr}"
     availability_zone = "${var.az_2}"
 
     tags = {
@@ -53,7 +58,7 @@ resource "aws_subnet" "primary_public_b" {
 # Private Subnets
 resource "aws_subnet" "primary_private_a" {
     vpc_id = "${aws_vpc.primary.id}"
-    cidr_block = "${null_resource.subnet_ranges.triggers.private_a_cidr}"
+    cidr_block = "${null_resource.private_subnet_ranges.triggers.private_a_cidr}"
     availability_zone = "${var.az_1}"
 
     tags = {
@@ -62,7 +67,7 @@ resource "aws_subnet" "primary_private_a" {
 }
 resource "aws_subnet" "primary_private_b" {
     vpc_id = "${aws_vpc.primary.id}"
-    cidr_block = "${null_resource.subnet_ranges.triggers.private_b_cidr}"
+    cidr_block = "${null_resource.private_subnet_ranges.triggers.private_b_cidr}"
     availability_zone = "${var.az_2}"
 
     tags = {
@@ -114,7 +119,7 @@ resource "aws_route_table_association" "private_b" {
 # NAT Instance
 resource "null_resource" "vpn" {
     triggers = {
-        private_ip = "${cidrhost(null_resource.subnet_ranges.triggers.public_cidr, 10)}"
+        private_ip = "${cidrhost(null_resource.public_subnet_ranges.triggers.public_a_cidr, 10)}"
     }
 }
 
@@ -122,7 +127,7 @@ resource "aws_instance" "vpn" {
     ami = "${var.ubuntu_1604_ami}"
     instance_type = "${var.vpn_instance_size}"
     key_name = "${var.key_name}"
-    subnet_id = "${aws_subnet.primary_public.id}"
+    subnet_id = "${aws_subnet.primary_public_a.id}"
     private_ip = "${null_resource.vpn.triggers.private_ip}"
     source_dest_check = false
     vpc_security_group_ids = ["${aws_security_group.public.id}"]
