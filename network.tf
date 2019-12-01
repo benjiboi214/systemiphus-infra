@@ -21,39 +21,56 @@ resource "aws_internet_gateway" "primary" {
 ## Subnets
 resource "null_resource" "subnet_ranges" {
     triggers = {
-        public_cidr = "${cidrsubnet(aws_vpc.primary.cidr_block, 8, 0)}"
-        private_cidr = "${cidrsubnet(aws_vpc.primary.cidr_block, 8, 1)}"
+        public_a_cidr = "${cidrsubnet(aws_vpc.primary.cidr_block, 8, 0)}"
+        public_b_cidr = "${cidrsubnet(aws_vpc.primary.cidr_block, 8, 1)}"
+        private_a_cidr = "${cidrsubnet(aws_vpc.primary.cidr_block, 8, 2)}"
+        private_b_cidr = "${cidrsubnet(aws_vpc.primary.cidr_block, 8, 3)}"
     }
 }
 
-output "private_subnet_cidr" {
-    value = "${null_resource.subnet_ranges.triggers.private_cidr}"
-}
-output "public_subnet_cidr" {
-    value = "${null_resource.subnet_ranges.triggers.public_cidr}"
-}
-
-resource "aws_subnet" "primary_public" {
+# Public Subnets
+resource "aws_subnet" "primary_public_a" {
     vpc_id = "${aws_vpc.primary.id}"
-    cidr_block = "${null_resource.subnet_ranges.triggers.public_cidr}"
+    cidr_block = "${null_resource.subnet_ranges.triggers.public_a_cidr}"
     availability_zone = "${var.az_1}"
 
     tags = {
-        Name = "subnet-sys-primary-public"
+        Name = "subnet-sys-primary-public-a"
     }
 }
 
-resource "aws_subnet" "primary_private" {
+resource "aws_subnet" "primary_public_b" {
     vpc_id = "${aws_vpc.primary.id}"
-    cidr_block = "${null_resource.subnet_ranges.triggers.private_cidr}"
+    cidr_block = "${null_resource.subnet_ranges.triggers.public_b_cidr}"
     availability_zone = "${var.az_2}"
 
     tags = {
-        Name = "subnet-sys-primary-private"
+        Name = "subnet-sys-primary-public-b"
     }
 }
 
-## Route Tables
+
+# Private Subnets
+resource "aws_subnet" "primary_private_a" {
+    vpc_id = "${aws_vpc.primary.id}"
+    cidr_block = "${null_resource.subnet_ranges.triggers.private_a_cidr}"
+    availability_zone = "${var.az_1}"
+
+    tags = {
+        Name = "subnet-sys-primary-private-a"
+    }
+}
+resource "aws_subnet" "primary_private_b" {
+    vpc_id = "${aws_vpc.primary.id}"
+    cidr_block = "${null_resource.subnet_ranges.triggers.private_b_cidr}"
+    availability_zone = "${var.az_2}"
+
+    tags = {
+        Name = "subnet-sys-primary-private-b"
+    }
+}
+
+# Public Routes
 resource "aws_route_table" "public" {
     vpc_id = "${aws_vpc.primary.id}"
 
@@ -63,28 +80,38 @@ resource "aws_route_table" "public" {
     }
 }
 
-resource "aws_route_table_association" "public" {
+resource "aws_route_table_association" "public_a" {
     route_table_id = "${aws_route_table.public.id}"
-    subnet_id = "${aws_subnet.primary_public.id}"
+    subnet_id = "${aws_subnet.primary_public_a.id}"
 }
 
+resource "aws_route_table_association" "public_b" {
+    route_table_id = "${aws_route_table.public.id}"
+    subnet_id = "${aws_subnet.primary_public_b.id}"
+}
+
+# Private Routes
 resource "aws_route_table" "private" {
     vpc_id = "${aws_vpc.primary.id}"
 
     route {
         cidr_block = "0.0.0.0/0"
         instance_id = "${aws_instance.vpn.id}"
-        # gateway_id = "${aws_internet_gateway.primary.id}"
     }
     
 }
 
-resource "aws_route_table_association" "private" {
+resource "aws_route_table_association" "private_a" {
     route_table_id = "${aws_route_table.private.id}"
-    subnet_id = "${aws_subnet.primary_private.id}"
+    subnet_id = "${aws_subnet.primary_private_a.id}"
 }
 
-# VPN/NAT Instance
+resource "aws_route_table_association" "private_b" {
+    route_table_id = "${aws_route_table.private.id}"
+    subnet_id = "${aws_subnet.primary_private_b.id}"
+}
+
+# NAT Instance
 resource "null_resource" "vpn" {
     triggers = {
         private_ip = "${cidrhost(null_resource.subnet_ranges.triggers.public_cidr, 10)}"

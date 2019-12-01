@@ -1,3 +1,4 @@
+## Variables
 variable "protonmail_mx_records" {
     type = "list"
 }
@@ -11,14 +12,12 @@ variable "protonmail_dkim_txt_records" {
     type = "list"
 }
 
+# Internal DNS
 resource "aws_route53_zone" "internal_dns" {
   name = "int.systemiphus.com"
 }
 
-resource "aws_route53_zone" "mmpl_dns" {
-  name = "mmpl.systemiphus.com"
-}
-
+# Public DNS
 resource "aws_route53_zone" "public_dns" {
   name = "systemiphus.com"
 }
@@ -35,18 +34,21 @@ output "vpn_instance_public_dns" {
   value = "${aws_route53_record.vpn.name}"
 }
 
-resource "aws_route53_record" "mmpl_staging" {
-  zone_id = "${aws_route53_zone.mmpl_dns.zone_id}"
-  name    = "staging.mmpl.systemiphus.com"
-  type    = "A"
+# MMPL DNS
+resource "aws_route53_zone" "mmpl_dns" {
+  name = "mmpl.systemiphus.com"
+}
+
+resource "aws_route53_record" "mmpl" {
+  zone_id = "${aws_route53_zone.public_dns.zone_id}"
+  name    = "mmpl"
+  type    = "NS"
   ttl     = "300"
-  records = ["${aws_eip.mmpl.public_ip}"]
+  records = "${aws_route53_zone.mmpl_dns.name_servers}"
 }
 
-output "mmpl_instance_public_dns" {
-  value = "${aws_route53_record.mmpl_staging.name}"
-}
 
+# Email Settings (Proton Mail)
 resource "aws_route53_record" "mx_records" {
   zone_id = "${aws_route53_zone.public_dns.zone_id}"
   name    = ""
@@ -77,32 +79,4 @@ resource "aws_route53_record" "dkim_txt_records" {
   type    = "TXT"
   ttl     = "300"
   records = "${var.protonmail_dkim_txt_records}"
-}
-
-resource "aws_route53_record" "int" {
-  zone_id = "${aws_route53_zone.public_dns.zone_id}"
-  name    = "int"
-  type    = "NS"
-  ttl     = "300"
-  records = "${aws_route53_zone.internal_dns.name_servers}"
-}
-
-resource "aws_route53_record" "jenkins" {
-  zone_id = "${aws_route53_zone.internal_dns.zone_id}"
-  name    = "jenkins.int.systemiphus.com"
-  type    = "A"
-  ttl     = "300"
-  records = ["${aws_instance.jenkins.private_ip}"]
-}
-
-output "jenkins_instance_public_dns" {
-  value = "${aws_route53_record.jenkins.name}"
-}
-
-resource "aws_route53_record" "mmpl" {
-  zone_id = "${aws_route53_zone.public_dns.zone_id}"
-  name    = "mmpl"
-  type    = "NS"
-  ttl     = "300"
-  records = "${aws_route53_zone.mmpl_dns.name_servers}"
 }

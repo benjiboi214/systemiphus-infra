@@ -9,12 +9,6 @@ az_2 = "ap-southeast-2c"
 # VPN/Nat Instance
 vpn_instance_size = "t2.nano"
 
-# Jenkins Instance
-jenkins_instance_size = "t2.micro"
-
-# MMPL Instances
-mmpl_instance_size = "t2.nano"
-
 # Instances
 ubuntu_1604_ami = "ami-09d9316fe73403e7b"
 key_name = "terraform-provisioner"
