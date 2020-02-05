@@ -38,3 +38,4 @@ variable "jenkins_count" {
 variable "jenkins_master_task_definition_arn" {}
 
 variable "jenkins_domain_ssl_cert_arn" {}
+variable "mmpl_domain_ssl_cert_arn" {}

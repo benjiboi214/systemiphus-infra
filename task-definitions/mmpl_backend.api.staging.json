@@ -1,0 +1,35 @@
+[
+    {
+        "memoryReservation": 512,
+        "environment": [
+            {
+                "name": "DJANGO_INTERNAL_PORT_NUM",
+                "value": "80"
+            }
+        ],
+        "name": "mmpl_backend-api-staging",
+        "mountPoints": [],
+        "image": "413514076128.dkr.ecr.ap-southeast-2.amazonaws.com/docker_django_aws_deploy:latest",
+        "logConfiguration": {
+            "logDriver": "awslogs",
+            "options": {
+                "awslogs-region": "ap-southeast-2",
+                "awslogs-stream-prefix": "ecs",
+                "awslogs-group": "/ecs/mmpl_backend-api-staging"
+            }
+        },
+        "cpu": 0,
+        "portMappings": [
+            {
+                "protocol": "tcp",
+                "containerPort": 80,
+                "hostPort": 80
+            }
+        ],
+        "command": [
+            "/app/start.sh"
+        ],
+        "essential": true,
+        "volumesFrom": []
+    }
+]
