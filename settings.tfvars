@@ -24,3 +24,4 @@ protonmail_dkim_txt_records = ["v=DKIM1; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNAD
 ecs_task_execution_role_name = "ecsTaskExecution-systemiphus"
 jenkins_master_task_definition_arn = "arn:aws:ecs:ap-southeast-2:413514076128:task-definition/jenkins_sys_td"
 jenkins_domain_ssl_cert_arn = "arn:aws:acm:ap-southeast-2:413514076128:certificate/5d75bb44-6de8-4f1c-b42e-3ef97beb3952"
+mmpl_domain_ssl_cert_arn = "arn:aws:acm:ap-southeast-2:413514076128:certificate/5d75bb44-6de8-4f1c-b42e-3ef97beb3952"
