@@ -183,7 +183,8 @@ resource "aws_ecs_service" "jenkins" {
   name            = "jenkins-service"
   cluster         = "${aws_ecs_cluster.systemiphus.id}"
   task_definition = "${var.jenkins_master_task_definition_arn}"
-  desired_count   = "${var.jenkins_count}"
+  # desired_count   = "${var.jenkins_count}"
+  desired_count   = "0"
   launch_type     = "FARGATE"
   health_check_grace_period_seconds = 30
 
@@ -203,9 +204,4 @@ resource "aws_ecs_service" "jenkins" {
     registry_arn = "${aws_service_discovery_service.jenkins_sys.arn}"
     container_name = "jenkins_sys_cont"
   }
-
-  depends_on = [
-    aws_alb_listener.jenkins,
-    aws_iam_role_policy_attachment.ecs_task_execution_role
-  ]
 }
