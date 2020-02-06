@@ -64,3 +64,54 @@ resource "aws_iam_role_policy_attachment" "deploy_service_ecs_full_access" {
   role       = "${aws_iam_role.deploy_service_role.name}"
   policy_arn = "arn:aws:iam::aws:policy/AmazonECS_FullAccess"
 }
+
+data "aws_iam_policy_document" "codepipeline_assume_role" {
+  version = "2012-10-17"
+  statement {
+    sid = ""
+    effect = "Allow"
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["codepipeline.amazonaws.com"]
+    }
+  }
+}
+
+# CodePipeline execution role
+resource "aws_iam_role" "pipeline_service_role" {
+  name               = "codePipelineServiceRole"
+  assume_role_policy = "${data.aws_iam_policy_document.codepipeline_assume_role.json}"
+}
+
+resource "aws_iam_role_policy_attachment" "pipeline_service_codecommit_full_access" {
+  role       = "${aws_iam_role.pipeline_service_role.name}"
+  policy_arn = "arn:aws:iam::aws:policy/AWSCodeCommitFullAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "pipeline_service_ecr_full_access" {
+  role       = "${aws_iam_role.pipeline_service_role.name}"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "pipeline_service_ecs_full_access" {
+  role       = "${aws_iam_role.pipeline_service_role.name}"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonECS_FullAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "pipeline_codebuild_full_access" {
+  role       = "${aws_iam_role.pipeline_service_role.name}"
+  policy_arn = "arn:aws:iam::aws:policy/AWSCodeBuildAdminAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "pipeline_codedeploy_deployer_access" {
+  role       = "${aws_iam_role.pipeline_service_role.name}"
+  policy_arn = "arn:aws:iam::aws:policy/AWSCodeDeployDeployerAccess"
+}
+
+## TODO CHECK THIS IS NOT A PROBLEM
+resource "aws_iam_role_policy_attachment" "pipeline_codedeploy_something" {
+  role       = "${aws_iam_role.pipeline_service_role.name}"
+  policy_arn = "arn:aws:iam::413514076128:policy/service-role/AWSCodePipelineServiceRole-ap-southeast-2-docker_django_aws_deploy"
+}
