@@ -119,18 +119,19 @@ resource "aws_alb_target_group" "mmpl_tg_1" {
 # }
 
 # # Redirect all traffic from the ALB to the target group
-resource "aws_alb_listener" "mmpl_staging_ssl" {
-  load_balancer_arn = "${aws_alb.mmpl_staging.id}"
-  port              = "443"
-  protocol          = "HTTPS"
-  ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   = "${var.mmpl_domain_ssl_cert_arn}"
+## Commented out because cannot set weighted target groups
+# resource "aws_alb_listener" "mmpl_staging_ssl" {
+#   load_balancer_arn = "${aws_alb.mmpl_staging.id}"
+#   port              = "443"
+#   protocol          = "HTTPS"
+#   ssl_policy        = "ELBSecurityPolicy-2016-08"
+#   certificate_arn   = "${var.mmpl_domain_ssl_cert_arn}"
 
-  default_action {
-    type             = "forward"
-    target_group_arn = "${aws_alb_target_group.mmpl_tg_1.id}"
-  }
-}
+#   default_action {
+#     type             = "forward"
+#     target_group_arn = "${aws_alb_target_group.mmpl_tg_1.id}"
+#   }
+# }
 
 # # Redirect all HTTP requests to SSL
 resource "aws_alb_listener" "mmpl_staging" {
