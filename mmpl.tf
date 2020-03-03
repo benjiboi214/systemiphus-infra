@@ -9,6 +9,13 @@ resource "aws_cloudwatch_log_group" "mmpl_backend-api-staging" {
   name = "/ecs/mmpl_backend-api-staging"
 }
 
+resource "aws_cloudwatch_log_group" "mmpl_backend-traefik-staging" {
+  name = "/ecs/mmpl_backend-traefik-staging"
+}
+
+resource "aws_cloudwatch_log_group" "mmpl_backend-api-staging-migration" {
+  name = "/ecs/mmpl_backend-api-staging-migration"
+}
 
 # Task Definition
 resource "aws_ecs_task_definition" "mmpl_backend_staging" {
@@ -30,6 +37,13 @@ resource "aws_security_group" "mmpl_lb_staging" {
   name        = "sys-mmpl-staging-lb-sg"
   description = "Controls access to the ALB"
   vpc_id      = "${aws_vpc.primary.id}"
+
+  ingress {
+    protocol    = "tcp"
+    from_port   = 8443
+    to_port     = 8443
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
   ingress {
     protocol    = "tcp"
@@ -93,7 +107,7 @@ resource "aws_alb_target_group" "mmpl_tg_1" {
     port                = "traffic-port"
     matcher             = "200,301"
     timeout             = "5"
-    path                = "/admin"
+    path                = "/"
     unhealthy_threshold = "10"
   }
 }
