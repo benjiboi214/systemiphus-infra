@@ -151,3 +151,43 @@ resource "aws_eip" "vpn" {
 output "vpn_instance_public_ip" {
     value = "${aws_eip.vpn.public_ip}"
 }
+
+
+
+
+# NAT Instance
+resource "null_resource" "lp" {
+    triggers = {
+        private_ip = "${cidrhost(null_resource.public_subnet_ranges.triggers.public_a_cidr, 12)}"
+    }
+}
+
+resource "aws_instance" "lp" {
+    ami = "${var.ubuntu_1604_ami}"
+    instance_type = "${var.vpn_instance_size}"
+    key_name = "${var.key_name}"
+    subnet_id = "${aws_subnet.primary_public_a.id}"
+    private_ip = "${null_resource.lp.triggers.private_ip}"
+    source_dest_check = false
+    vpc_security_group_ids = ["${aws_security_group.public.id}"]
+
+    root_block_device {
+        volume_type = "standard"
+        volume_size = 8
+        delete_on_termination = "true"
+    }
+
+    tags = {
+        Name = "inst-sys-lp"
+    }
+}
+
+resource "aws_eip" "lp" {
+    vpc = true
+    instance = "${aws_instance.lp.id}"
+}
+
+output "lp_instance_public_ip" {
+    value = "${aws_eip.lp.public_ip}"
+}
+
