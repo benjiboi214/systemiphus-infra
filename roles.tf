@@ -2,8 +2,8 @@
 data "aws_iam_policy_document" "ecs_assume_role" {
   version = "2012-10-17"
   statement {
-    sid = ""
-    effect = "Allow"
+    sid     = ""
+    effect  = "Allow"
     actions = ["sts:AssumeRole"]
 
     principals {
@@ -38,8 +38,8 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_pipeline_action" {
 data "aws_iam_policy_document" "codedeploy_assume_role" {
   version = "2012-10-17"
   statement {
-    sid = ""
-    effect = "Allow"
+    sid     = ""
+    effect  = "Allow"
     actions = ["sts:AssumeRole"]
 
     principals {
@@ -78,8 +78,8 @@ resource "aws_iam_role_policy_attachment" "deploy_service_ecs_full_access" {
 data "aws_iam_policy_document" "codepipeline_assume_role" {
   version = "2012-10-17"
   statement {
-    sid = ""
-    effect = "Allow"
+    sid     = ""
+    effect  = "Allow"
     actions = ["sts:AssumeRole"]
 
     principals {
@@ -124,4 +124,48 @@ resource "aws_iam_role_policy_attachment" "pipeline_codedeploy_deployer_access" 
 resource "aws_iam_role_policy_attachment" "pipeline_codedeploy_something" {
   role       = "${aws_iam_role.pipeline_service_role.name}"
   policy_arn = "arn:aws:iam::413514076128:policy/service-role/AWSCodePipelineServiceRole-ap-southeast-2-docker_django_aws_deploy"
+}
+
+## Lambda execution role
+data "aws_iam_policy_document" "lambda_assume_role" {
+  version = "2012-10-17"
+  statement {
+    sid     = ""
+    effect  = "Allow"
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["lambda.amazonaws.com"]
+    }
+  }
+}
+
+# CodePipeline execution role
+resource "aws_iam_role" "lambda_execution_role" {
+  name               = "codePipelineLambdaExecutionRole"
+  assume_role_policy = "${data.aws_iam_policy_document.lambda_assume_role.json}"
+}
+
+resource "aws_iam_role_policy_attachment" "pipeline_lambda_execution" {
+  role       = "${aws_iam_role.lambda_execution_role.name}"
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+resource "aws_iam_role_policy" "put_lifecycle_hook" {
+  name = "PutLifeCycleHook"
+  role = "${aws_iam_role.lambda_execution_role.id}"
+
+  policy = <<-EOF
+  {
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": "codedeploy:PutLifecycleEventHookExecutionStatus",
+            "Resource": "*"
+        }
+      ]
+  }
+  EOF
 }
