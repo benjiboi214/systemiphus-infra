@@ -11,6 +11,7 @@ resource "aws_s3_bucket" "lambda-artifact-storage" {
  
     tags = {
       Name = "S3 Lambda Artifact Store"
+      purpose = "Lambda Artifact Stores"
     }      
 }
 

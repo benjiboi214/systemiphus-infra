@@ -29,6 +29,7 @@ resource "aws_s3_bucket" "terraform-state-storage-s3" {
  
     tags = {
       Name = "S3 Remote Terraform State Store"
+      purpose = "TF Remote State"
     }      
 }
 
