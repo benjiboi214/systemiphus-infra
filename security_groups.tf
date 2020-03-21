@@ -6,11 +6,20 @@ resource "aws_security_group" "public" {
 
     ingress {
         # Egress to Anywhere over Any Protocol from Public SG
-        from_port = 0
-        to_port = 0
-        protocol = -1
+        from_port = 22
+        to_port = 22
+        protocol = "tcp"
         cidr_blocks = ["0.0.0.0/0"]
-        description = "Inress from Anywhere over Any Protocol from Public SG"
+        description = "Ingress anywhere over SSH for the public SG"
+    }
+
+    ingress {
+        # Egress to Anywhere over Any Protocol from Public SG
+        from_port = 1194
+        to_port = 1194
+        protocol = "udp"
+        cidr_blocks = ["0.0.0.0/0"]
+        description = "Ingress anywhere over SSH for the public SG"
     }
 
     egress {
